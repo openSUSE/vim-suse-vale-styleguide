@@ -52,13 +52,13 @@ function s:Init()
 
   "   O  P  T  I  O  N  S'    D  E  F  A  U  L  T     V  A  L  U  E  S
   let b:vale_executable = get(g:, 'vale_executable', '/usr/bin/vale')
-  let b:vale_stylecheck_on_save = get(g:, 'vale_stylecheck_on_save', 0)
+  let b:vale_config = get(g:, 'vale_config', s:plugindir . '/.vale.ini')
   let b:vale_stylecheck_qfwindow = get(g:, 'vale_stylecheck_qfwindow', 1)
 endfunction
 
 function s:dbg(msg)
   if b:vale_debug == 1
-    let msg = "DEBUG: " . a:msg
+    let msg = "DBG:vale: " . a:msg
     if exists("b:vale_log_file") && !empty(b:vale_log_file)
       call writefile([msg], b:vale_log_file, 'a')
     else
@@ -75,8 +75,8 @@ function s:ValeStylecheck()
   execute 'cclose'
   execute 'sign unplace *'
   " check for 'vale' binary
-  if !executable('vale')
-    echoe "Command 'vale' was not found"
+  if !executable(b:vale_executable)
+    echoe "Executable " . b:vale_executable . "  was not found"
     return 1
   endif
   "save the current  buffer to disk
@@ -87,14 +87,13 @@ function s:ValeStylecheck()
   exe "lcd " . current_file_dir
   let current_file_path = expand('%:t')
   " compile vale command and run it
-  let vale_cmd = "vale --output " . s:plugindir . "/tools/vale_template --no-wrap --config " . s:plugindir . "/.vale.ini " . current_file_path
+  let vale_cmd = b:vale_executable . " --output " . s:plugindir . "/tools/vale_template --no-wrap --config " . b:vale_config . " " . current_file_path
   call s:dbg('vale_cmd -> ' . vale_cmd)
   silent let output = systemlist(vale_cmd)
   " remove empty lines from the output
   call filter(output, 'v:val != ""')
   " sort the output so that ERRORS are first and SUGGESTIONS last
   let sorted_output = sort(output, 's:CompareStylePriority')
-  call s:dbg('output -> ' . string(sorted_output))
   " cd back to cwd
   exe "lcd " . cwd
   " define signs for quickfix list
