@@ -1,0 +1,22 @@
+*suse-vale-styleguide.txt*
+
+                                            *suse-vale-styleguide-installation*
+I recommend using a plugin manager such as vim-plug
+(https://github.com/junegunn/vim-plug) to install and update
+vim-suse-vale-styleguide.  If you do not want to use a plugin manager, download
+and uncompress the tarball into your ~/.vim/plugin directory.
+
+                                            *suse-vale-styleguide-requirements*
+You need to have the vale binary installed on your system. Refer to
+https://vale.sh/docs/vale-cli/installation/
+
+Commands:
+:ValeStylecheck
+  Checks the current buffer's style, then displays error messages in a quickfix
+  window.
+                                                *suse-vale-styleguide-settings*
+g:vale_stylecheck_qfwindow = 0 or 1
+  Whether to open a quick fix window on style check. By default, both quick fix
+  window is opened and the signs are placed in the document.
+
+
